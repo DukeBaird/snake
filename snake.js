@@ -15,4 +15,19 @@ checkFood();
 
 }
 
+function checkCollision(){
 
+
+}
+
+function checkFood(){
+
+}
+
+
+
+function move(dir){
+
+
+
+}
