@@ -1,5 +1,3 @@
-// Created with some help from thecodeplayer.com
-
 var canvas = $("#canvas")[0];
 var ctx = canvas.getContext("2d");
 var w = $("#canvas").width();
