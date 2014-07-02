@@ -9,6 +9,7 @@ var score;
 var snake_array; 
 
 function init() {
+
 	dir = "right"; 
 	create_snake();
 	create_food();
@@ -17,23 +18,25 @@ function init() {
 	if (typeof game_loop != "undefined") {
 		clearInterval(game_loop);
 	}
-	game_loop = setInterval(paint, 60); //Move the snake every 60 ms
+	game_loop = setInterval(paint, 60);
 }
 
 
 function create_snake() {
+
 	var length = 5;
-	snake_array = []; 
+	snake_array = [];
 
 	for(var i = length-1; i>=0; i--) {
 		snake_array.push({
 			x: i,
 			y:0
-		}); //This will create a horizontal snake starting from the top left
+		}); 
 	}
 }
 
 function create_food() {
+
 	food = {
 		x: Math.round(Math.random()*(w-cellWidth)/cellWidth), 
 		y: Math.round(Math.random()*(h-cellWidth)/cellWidth), 
@@ -42,11 +45,11 @@ function create_food() {
 
 
 function paint() {	
+
 	var score_text = "Score: " + score;
 	var nx = snake_array[0].x;
 	var ny = snake_array[0].y;
 
-	//Blank the screen before redrawing
 	ctx.fillStyle = "white";
 	ctx.fillRect(0, 0, w, h);
 	ctx.strokeStyle = "black";
@@ -62,13 +65,11 @@ function paint() {
 		ny++;
 	}
 
-	//Game Overs
 	if(nx == -1 || nx == w/cellWidth || ny == -1 || ny == h/cellWidth || check_collision(nx, ny, snake_array)) {
 		init();
 		return;
 	}
 	
-	//Eat food
 	if(nx == food.x && ny == food.y) {
 		var tail = {
 			x: nx, 
@@ -94,6 +95,7 @@ function paint() {
 }
 
 function paint_cell(x, y) {
+
 	ctx.fillStyle = "green";
 	ctx.fillRect(x*cellWidth, y*cellWidth, cellWidth, cellWidth);
 	ctx.strokeStyle = "white";
@@ -112,12 +114,18 @@ function check_collision(x, y, array) {
 }
 
 $(document).keydown(function(e) {
+	
 	var key = e.which;
 
-	if(key == "37" && dir != "right") dir = "left";
-	else if(key == "38" && dir != "down") dir = "up";
-	else if(key == "39" && dir != "left") dir = "right";
-	else if(key == "40" && dir != "up") dir = "down";
+	if (key == "37" && dir != "right") {
+		dir = "left";
+	} else if (key == "38" && dir != "down") {
+		dir = "up";
+	} else if (key == "39" && dir != "left") {
+		dir = "right";
+	} else if (key == "40" && dir != "up") {
+		dir = "down";
+	}
 })
 
 init();
