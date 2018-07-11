@@ -1,33 +1,26 @@
-var canvas = $("#canvas")[0];
-var ctx = canvas.getContext("2d");
-var w = $("#canvas").width();
-var h = $("#canvas").height();
-var cellWidth = 10;
-var dir;
-var food;
-var score;
-var snake_array; 
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const w = canvas.width;
+const h = canvas.height;
+const cellWidth = 10;
+let dir;
+let food;
+let score;
+let snake_array; 
 
-function init() {
-
+const init = () => {
 	dir = "right"; 
-	create_snake();
-	create_food();
+	create_snake(5);
+	food = create_food();
 	score = 0;
 
-	if (typeof game_loop != "undefined") {
-		clearInterval(game_loop);
-	}
-	game_loop = setInterval(paint, 60);
+	paint();
 }
 
-
-function create_snake() {
-
-	var length = 5;
+const create_snake = length => {
 	snake_array = [];
 
-	for(var i = length-1; i>=0; i--) {
+	for (let i = length-1; i>=0; i--) {
 		snake_array.push({
 			x: i,
 			y:0
@@ -35,26 +28,25 @@ function create_snake() {
 	}
 }
 
-function create_food() {
-
-	food = {
+const create_food = () => {
+	return {
 		x: Math.round(Math.random()*(w-cellWidth)/cellWidth), 
 		y: Math.round(Math.random()*(h-cellWidth)/cellWidth), 
 	};
 }
 
+const paint = () => {	
 
-function paint() {	
-
-	var score_text = "Score: " + score;
-	var nx = snake_array[0].x;
-	var ny = snake_array[0].y;
+	const score_text = "Score: " + score;
+	let nx = snake_array[0].x;
+	let ny = snake_array[0].y;
+	let tail;
 
 	ctx.fillStyle = "white";
 	ctx.fillRect(0, 0, w, h);
 	ctx.strokeStyle = "black";
 	ctx.strokeRect(0, 0, w, h);
-	
+
 	if (dir == "right") {
 		nx++; 
 	} else if (dir == "left") {
@@ -65,57 +57,53 @@ function paint() {
 		ny++;
 	}
 
-	if(nx == -1 || nx == w/cellWidth || ny == -1 || ny == h/cellWidth || check_collision(nx, ny, snake_array)) {
+	// if dead
+	if (nx == -1 || nx == w/cellWidth || ny == -1 || ny == h/cellWidth || check_collision(nx, ny, snake_array)) {
 		init();
 		return;
 	}
-	
-	if(nx == food.x && ny == food.y) {
-		var tail = {
+
+	// if ate food
+	if (nx == food.x && ny == food.y) {
+		tail = {
 			x: nx, 
 			y: ny
 		};
 		score++;
-		create_food();
+		food = create_food();
+	} else {
+		tail = snake_array.pop();
+		tail.x = nx; 
+		tail.y = ny;
 	}
-	else {
-		var tail = snake_array.pop();
-		tail.x = nx; tail.y = ny;
-	}
-	
+
 	snake_array.unshift(tail);
-	
-	for(var i = 0; i < snake_array.length; i++) {
-		var c = snake_array[i];
-		paint_cell(c.x, c.y);
-	}
-	
+	snake_array.forEach(cell => paint_cell(cell.x, cell.y));
+
 	paint_cell(food.x, food.y);
 	ctx.fillText(score_text, 5, h-5);
+
+	requestAnimationFrame(paint);
 }
 
-function paint_cell(x, y) {
-
+const paint_cell = (x, y) => {
 	ctx.fillStyle = "green";
 	ctx.fillRect(x*cellWidth, y*cellWidth, cellWidth, cellWidth);
 	ctx.strokeStyle = "white";
 	ctx.strokeRect(x*cellWidth, y*cellWidth, cellWidth, cellWidth);
 }
 
-function check_collision(x, y, array) {
-
-	for(var i = 0; i < array.length; i++)
-	{
-		if(array[i].x == x && array[i].y == y) {
+const check_collision = (x, y, array) => {
+	array.forEach(cell => {
+		if (cell.x === x && cell.y === y) {
 			return true;
 		}
-	}
+	});
 	return false;
 }
 
-$(document).keydown(function(e) {
-	
-	var key = e.which;
+document.addEventListener("keydown", function(e) {
+	const key = e.which;
 
 	if (key == "37" && dir != "right") {
 		dir = "left";
@@ -126,6 +114,6 @@ $(document).keydown(function(e) {
 	} else if (key == "40" && dir != "up") {
 		dir = "down";
 	}
-})
+});
 
 init();
